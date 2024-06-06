@@ -32,7 +32,7 @@ def _prepare_openapi(data, status_codes):
                 "description": description.get("summary"),
                 "path": key,
                 "statuses": status_codes,
-                "tag": description.get("tags")[0],
+                "tag": description.get("tags")[0] if "tags" in description else "default",
             }
             uuid = uuid + 1
     return res_dict
