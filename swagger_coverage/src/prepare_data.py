@@ -17,7 +17,7 @@ def _prepare_swagger(data, status_codes):
                 "description": description.get("description"),
                 "path": key,
                 "statuses": status_codes,
-                "tag": description.get("tags")[0],
+                "tag": description.get("tags")[0] if "tags" in description else "default",
             }
     return res_dict
 
@@ -36,6 +36,8 @@ def _prepare_openapi(data, status_codes):
             }
             uuid = uuid + 1
     return res_dict
+
+
 class PrepareData:
     def prepare_swagger_data(self, data: SwaggerResponse, status_codes: list) -> dict:
         """
@@ -62,4 +64,3 @@ class PrepareData:
         return data
 
     _map_prepare = {"swagger": _prepare_swagger, "openapi": _prepare_openapi}
-
