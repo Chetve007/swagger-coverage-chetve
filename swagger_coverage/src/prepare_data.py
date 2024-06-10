@@ -10,6 +10,9 @@ def _prepare_swagger(data, status_codes):
     for key, value in data.items():
         list_values = list(value.values())
         for values in list_values:
+            if 'deprecated' in values:
+                if values.get('deprecated'):
+                    continue
             res_dict[values.get("operationId")] = []
         for method, description in value.items():
             if 'deprecated' in description:
