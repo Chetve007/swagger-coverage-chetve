@@ -12,6 +12,9 @@ def _prepare_swagger(data, status_codes):
         for values in list_values:
             res_dict[values.get("operationId")] = []
         for method, description in value.items():
+            if 'deprecated' in description:
+                if description.get('deprecated'):
+                    continue
             res_dict[description.get("operationId")] = {
                 "method": method.upper(),
                 "description": description.get("description"),
@@ -27,6 +30,9 @@ def _prepare_openapi(data, status_codes):
     uuid = 1
     for key, value in data.items():
         for method, description in value.items():
+            if 'deprecated' in description:
+                if description.get('deprecated'):
+                    continue
             res_dict[uuid] = {
                 "method": method.upper(),
                 "description": description.get("summary"),
