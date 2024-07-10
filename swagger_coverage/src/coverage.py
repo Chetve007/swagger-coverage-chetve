@@ -50,7 +50,7 @@ class SwaggerCoverage(metaclass=Singleton):
     # parent_dir = get_parent_dir()
     # path_to_results = get_path_results(parent_dir, _SWAGGER_REPORT_DIR)
 
-    def create_coverage_data(self, service: str, config: dict, file_name: str = _TEST_SWAGGER_FILE_NAME):
+    def create_coverage_data(self, service: str = None, config: dict = None, file_name: str = _TEST_SWAGGER_FILE_NAME):
         """
         Create coverage data
         """
@@ -84,7 +84,7 @@ class SwaggerCoverage(metaclass=Singleton):
         results = SwaggerResults(self)
         return results.save_results(service, config, self.path)
 
-    def create_report(self, service, config, path=_SWAGGER_REPORT_DIR, report_type="html"):
+    def create_report(self, service=None, config=None, path=_SWAGGER_REPORT_DIR, report_type="html"):
         # merge results
         result_path = f"{path}/json_results"
         if not is_file_exist(result_path):

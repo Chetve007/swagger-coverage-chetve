@@ -52,6 +52,9 @@ def _prepare_openapi(data, status_codes, service, config):
 
 
 def _ignore_entities(data, service, config):
+    if not service or not config:
+        return None
+
     if service in config:
         # delete ignore handles
         if config[service]['handles']:
