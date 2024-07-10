@@ -5,7 +5,9 @@ from swagger_coverage.src.models.swagger_data import SwaggerResponse
 logger = logging.getLogger("swagger")
 
 
-def _prepare_swagger(data, status_codes):
+def _prepare_swagger(data, status_codes, service, config):
+    _ignore_entities(data, service, config)
+
     res_dict = {}
     for key, value in data.items():
         list_values = list(value.values())
@@ -28,7 +30,9 @@ def _prepare_swagger(data, status_codes):
     return res_dict
 
 
-def _prepare_openapi(data, status_codes):
+def _prepare_openapi(data, status_codes, service, config):
+    _ignore_entities(data, service, config)
+
     res_dict = {}
     uuid = 1
     for key, value in data.items():
@@ -47,16 +51,41 @@ def _prepare_openapi(data, status_codes):
     return res_dict
 
 
+def _ignore_entities(data, service, config):
+    if service in config:
+        # delete ignore handles
+        if config[service]['handles']:
+            handles_for_remove = config[service]['handles']
+            for handle in handles_for_remove:
+                if len(data[handle[1]]) == 1:
+                    del data[handle[1]]
+                else:
+                    del data[handle[1]][handle[0]]
+
+        # delete ignore handles by tag
+        if config[service]['tags']:
+            tags_for_remove = config[service]['tags']
+            ignore_handles_by_tags = []
+            for key, value in data.items():
+                if 'tags' in list(value.values())[0]:
+                    if list(value.values())[0]['tags'][0] in tags_for_remove:
+                        ignore_handles_by_tags.append(key)
+            for item in ignore_handles_by_tags:
+                del data[item]
+
+
 class PrepareData:
-    def prepare_swagger_data(self, data: SwaggerResponse, status_codes: list) -> dict:
+    def prepare_swagger_data(self, data: SwaggerResponse, status_codes: list, service: str, config: dict) -> dict:
         """
         Preparing data for tests
         :param status_codes:
         :param data:
+        :param service:
+        :param config:
         :return: swagger dict
         """
         type_swagger = data.swagger_type
-        return self._map_prepare.get(type_swagger)(data.paths, status_codes)
+        return self._map_prepare.get(type_swagger)(data.paths, status_codes, service, config)
 
     @staticmethod
     def prepare_check_file_data(data: dict) -> dict:

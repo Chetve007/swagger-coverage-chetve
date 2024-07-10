@@ -50,7 +50,7 @@ class SwaggerCoverage(metaclass=Singleton):
     # parent_dir = get_parent_dir()
     # path_to_results = get_path_results(parent_dir, _SWAGGER_REPORT_DIR)
 
-    def create_coverage_data(self, file_name: str = _TEST_SWAGGER_FILE_NAME):
+    def create_coverage_data(self, service: str, config: dict, file_name: str = _TEST_SWAGGER_FILE_NAME):
         """
         Create coverage data
         """
@@ -60,7 +60,10 @@ class SwaggerCoverage(metaclass=Singleton):
             load_data = load_swagger(self.swagger_url)
             prepare = PrepareData()
             prepare_data = prepare.prepare_swagger_data(
-                data=load_data, status_codes=self.status_codes
+                data=load_data,
+                status_codes=self.status_codes,
+                service=service,
+                config=config
             )
             save_yaml(path_file=self.path_to_file, data=prepare_data)
         self._prepare_exist_swagger()
@@ -77,16 +80,16 @@ class SwaggerCoverage(metaclass=Singleton):
         prepare = PrepareData()
         self.data.swagger_data = prepare.prepare_check_file_data(dict_data)
 
-    def save_results(self) -> str:
+    def save_results(self, service, config) -> str:
         results = SwaggerResults(self)
-        return results.save_results(self.path)
+        return results.save_results(service, config, self.path)
 
-    def create_report(self, path=_SWAGGER_REPORT_DIR, report_type="html"):
+    def create_report(self, service, config, path=_SWAGGER_REPORT_DIR, report_type="html"):
         # merge results
         result_path = f"{path}/json_results"
         if not is_file_exist(result_path):
             create_dir(self.path)
-        self.save_results()
+        self.save_results(service, config)
         result_paths = get_json_result_path(path=result_path)
         load_results = LoadSwaggerResults()
         merge_result = load_results.merge_results(result_paths)

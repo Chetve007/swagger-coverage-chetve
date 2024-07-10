@@ -14,7 +14,7 @@ class SwaggerResults:
         self.api_url = data.api_url
         self.status_codes = data.status_codes
 
-    def save_results(self, path: str):
+    def save_results(self, service: str, config: dict, path: str):
         """
         Save result in json file
         :return:
@@ -22,7 +22,7 @@ class SwaggerResults:
         load_data = load_swagger(self.swagger_url)
         prepare = PrepareData()
         prepare_data = prepare.prepare_swagger_data(
-            data=load_data, status_codes=self.status_codes
+            data=load_data, status_codes=self.status_codes, service=service, config=config
         )
         diff = SwaggerDiff(
             local_swagger=self.results.swagger_data, actual_swagger=prepare_data
